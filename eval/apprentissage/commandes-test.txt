@@ -1,0 +1,8 @@
+# Un fragment par ligne. Une commande Bash/PowerShell qui le contient compte comme un test lancé.
+pytest
+vitest
+test_hooks.py
+dotnet test
+npm test
+unittest
+dotnet build

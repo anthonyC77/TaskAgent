@@ -1,0 +1,30 @@
+# Build / IDE
+bin/
+obj/
+.vs/
+*.user
+__pycache__/
+releases/
+
+# Livres et recherches personnelles (PDF → Kindle, impressions de sites)
+*.pdf
+*.epub
+*.glossaire.json
+*.cache-traduction.json
+*_images/
+_sommaire.txt
+PdfToKindle/*/
+
+# Claude Code : notes de session et file d'apprentissage, tirées de tes conversations
+.claude/apprentissage/
+.claude/settings.local.json
+
+# Éval : mesures de tes sessions réelles (seuls les 4 fichiers de réglage du modèle sont versionnés)
+eval/apprentissage/*
+!eval/apprentissage/commandes-test.txt
+!eval/apprentissage/corrections.txt
+!eval/apprentissage/prix.json
+!eval/apprentissage/seuils.json
+# Sorties d'examen (régénérables) et cas personnels éventuels
+eval/runs/
+eval/perso/

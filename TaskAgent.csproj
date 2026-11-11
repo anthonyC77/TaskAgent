@@ -1,0 +1,44 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <RootNamespace>TaskAgent</RootNamespace>
+    <AssemblyName>TaskAgent</AssemblyName>
+    <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+    <AvaloniaUseCompiledBindingsByDefault>false</AvaloniaUseCompiledBindingsByDefault>
+    <!-- Version des builds de dev ; deploy.ps1 publie avec le numéro de la 1re section de CHANGELOG.md (-p:Version=…). -->
+    <Version>1.1.0</Version>
+  </PropertyGroup>
+
+  <!-- Ancien projet autonome, fusionné dans Kindle/ : on ne compile pas ce qui reste du dossier -->
+  <ItemGroup>
+    <Compile Remove="PdfToKindle\**" />
+    <None Remove="PdfToKindle\**" />
+    <!-- Versions déployées par deploy.ps1 : jamais recompilées ni recopiées -->
+    <Compile Remove="releases\**" />
+    <None Remove="releases\**" />
+    <Content Remove="releases\**" />
+  </ItemGroup>
+
+  <!-- Les notes de version voyagent avec l'exe (fenêtre « Nouveautés ») -->
+  <ItemGroup>
+    <None Include="CHANGELOG.md" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="11.2.3" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.2.3" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.2.3" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.2.3" />
+    <PackageReference Include="Microsoft.Playwright" Version="1.64.1" />
+    <PackageReference Include="PdfPig" Version="0.1.16" />
+    <PackageReference Include="PDFtoImage" Version="4.1.1" />
+    <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="8.0.0" />
+    <PackageReference Include="TesseractOCR" Version="5.5.2" />
+  </ItemGroup>
+
+</Project>

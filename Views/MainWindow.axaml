@@ -1,0 +1,256 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="TaskAgent.Views.MainWindow"
+        Title="TaskAgent"
+        Width="1150" Height="760" MinWidth="800" MinHeight="520"
+        WindowStartupLocation="CenterScreen">
+
+  <Window.Styles>
+    <Style Selector="TextBlock.muted">
+      <Setter Property="Opacity" Value="0.65"/>
+      <Setter Property="FontSize" Value="12"/>
+    </Style>
+    <Style Selector="Border.msg">
+      <Setter Property="Background" Value="#22888888"/>
+      <Setter Property="CornerRadius" Value="8"/>
+      <Setter Property="Padding" Value="10,8"/>
+      <Setter Property="Margin" Value="0,4,60,4"/>
+    </Style>
+    <Style Selector="Border.msg.user">
+      <Setter Property="Background" Value="#335B8DEF"/>
+      <Setter Property="Margin" Value="60,4,0,4"/>
+    </Style>
+    <!-- Titre de sous-tâche éditable : discret tant qu'on ne clique pas dedans -->
+    <Style Selector="TextBox.inline">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Padding" Value="4,2"/>
+      <Setter Property="MinHeight" Value="0"/>
+      <Setter Property="VerticalContentAlignment" Value="Center"/>
+    </Style>
+    <Style Selector="TextBox.inline:pointerover /template/ Border#PART_BorderElement">
+      <Setter Property="Background" Value="#14888888"/>
+    </Style>
+    <Style Selector="TextBox.inline:focus /template/ Border#PART_BorderElement">
+      <Setter Property="BorderThickness" Value="1"/>
+    </Style>
+    <Style Selector="TextBox.inline.done">
+      <Setter Property="Opacity" Value="0.55"/>
+    </Style>
+    <Style Selector="Button.move">
+      <Setter Property="Padding" Value="5,0"/>
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="Opacity" Value="0.5"/>
+      <Setter Property="FontSize" Value="11"/>
+    </Style>
+    <Style Selector="Button.remove">
+      <Setter Property="Padding" Value="6,0"/>
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="Opacity" Value="0.6"/>
+    </Style>
+  </Window.Styles>
+
+  <Grid ColumnDefinitions="400,*">
+
+    <!-- ===== Colonne gauche : liste des tâches ===== -->
+    <DockPanel Grid.Column="0" Margin="12">
+      <StackPanel DockPanel.Dock="Top" Spacing="8">
+        <DockPanel>
+          <Button DockPanel.Dock="Right" x:Name="VersionBtn" Content="?" Margin="6,0,0,0"
+                  ToolTip.Tip="Version et nouveautés"/>
+          <Button DockPanel.Dock="Right" x:Name="SettingsBtn" Content="⚙"
+                  ToolTip.Tip="Ouvrir les réglages (settings.json). Redémarre l'appli après modification."/>
+          <Button DockPanel.Dock="Right" x:Name="SitePrintBtn" Content="🖨" Margin="0,0,6,0"
+                  ToolTip.Tip="Imprimer un site : enregistrer toutes ses pages en PDF dans un dossier"/>
+          <Button DockPanel.Dock="Right" x:Name="KindleBtn" Content="📚" Margin="0,0,6,0"
+                  ToolTip.Tip="PDF → Kindle / Markdown : convertir un PDF ou un dossier de PDF en EPUB ou en .md, avec OCR et traduction IA en option"/>
+          <Button DockPanel.Dock="Right" x:Name="MemoryBtn" Content="RAM …" Margin="0,0,6,0" FontWeight="SemiBold"
+                  ToolTip.Tip="Mémoire vive utilisée · clic = voir les applis gourmandes et en fermer"/>
+          <StackPanel>
+            <TextBlock Text="Mes tâches" FontSize="20" FontWeight="SemiBold"/>
+            <TextBlock x:Name="TodayText" Classes="muted"/>
+          </StackPanel>
+        </DockPanel>
+        <!-- Nouvelle version déployée : on propose, on n'impose pas (redémarrer quand ça t'arrange). -->
+        <Border x:Name="UpdateBanner" IsVisible="False" Background="#2230A46C" CornerRadius="6" Padding="10,6">
+          <DockPanel>
+            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+              <Button x:Name="UpdateNotesBtn" Content="Nouveautés"/>
+              <Button x:Name="UpdateRestartBtn" Content="🔄 Redémarrer" Classes="accent"/>
+            </StackPanel>
+            <TextBlock x:Name="UpdateText" TextWrapping="Wrap" VerticalAlignment="Center" FontWeight="SemiBold"/>
+          </DockPanel>
+        </Border>
+        <DockPanel>
+          <Button DockPanel.Dock="Right" x:Name="AddBtn" Content="Ajouter" Margin="6,0,0,0"/>
+          <TextBox x:Name="NewTaskBox" Watermark="Nouvelle tâche… (Entrée)"/>
+        </DockPanel>
+      </StackPanel>
+
+      <WrapPanel DockPanel.Dock="Bottom" Margin="0,8,0,0">
+        <Button x:Name="ProgressBtn" Content="✅ J'ai avancé" Margin="0,0,6,6"/>
+        <Button x:Name="BlockedBtn" Content="⛔ Je bloque…" Margin="0,0,6,6"/>
+        <Button x:Name="DeleteBtn" Content="Supprimer" Margin="0,0,6,6"/>
+      </WrapPanel>
+
+      <ListBox x:Name="TaskList" Margin="0,8,0,0">
+        <ListBox.ItemTemplate>
+          <DataTemplate>
+            <DockPanel>
+              <!-- Barre de couleur = urgence de l'échéance -->
+              <Border DockPanel.Dock="Left" Width="4" CornerRadius="2" Margin="0,0,8,0" Background="{Binding DueBrush}"/>
+              <CheckBox DockPanel.Dock="Left" IsChecked="{Binding IsDone}"
+                        VerticalAlignment="Top" Margin="0,0,6,0"
+                        ToolTip.Tip="Cocher = tâche terminée"/>
+              <StackPanel Spacing="2">
+                <TextBlock Text="{Binding Title}" TextWrapping="Wrap" FontWeight="SemiBold"/>
+                <TextBlock Text="{Binding DueLabel}" Foreground="{Binding DueBrush}" FontSize="12"/>
+                <TextBlock Text="{Binding Subtitle}" Classes="muted" TextWrapping="Wrap"/>
+                <TextBlock Text="{Binding MetaLine}" Classes="muted" TextWrapping="Wrap"/>
+                <TextBlock Text="{Binding ToolLabel}" IsVisible="{Binding HasTool}"
+                           FontSize="12" TextWrapping="Wrap" Foreground="#A07CF0"/>
+                <ProgressBar Value="{Binding SubProgressPercent}" IsVisible="{Binding HasSubTasks}"
+                             Height="4" MinHeight="4" Margin="0,2,0,0"/>
+                <TextBlock Text="{Binding NextActionLabel}" IsVisible="{Binding HasNextAction}"
+                           FontSize="12" TextWrapping="Wrap" Foreground="#5B8DEF"/>
+              </StackPanel>
+            </DockPanel>
+          </DataTemplate>
+        </ListBox.ItemTemplate>
+      </ListBox>
+    </DockPanel>
+
+    <!-- ===== Colonne droite : détail, sous-tâches, historique, chat ===== -->
+    <Border Grid.Column="1" BorderThickness="1,0,0,0" BorderBrush="#33888888">
+      <Panel>
+        <TextBlock x:Name="Placeholder" Classes="muted" FontSize="14"
+                   HorizontalAlignment="Center" VerticalAlignment="Center"
+                   Text="Sélectionne ou crée une tâche pour en parler avec l'agent."/>
+
+        <Grid x:Name="DetailPanel" Margin="12" RowDefinitions="Auto,*,Auto">
+
+          <!-- En-tête de la tâche -->
+          <StackPanel Grid.Row="0" Spacing="6">
+            <TextBox Text="{Binding Title}" FontSize="18" FontWeight="SemiBold" Watermark="Titre"/>
+
+            <WrapPanel>
+              <TextBlock Text="Échéance :" VerticalAlignment="Center" Margin="0,0,6,0"/>
+              <CalendarDatePicker SelectedDate="{Binding DueDate, Mode=TwoWay}" Watermark="aucune" Width="150" Margin="0,0,4,0"/>
+              <Button x:Name="ClearDueBtn" Content="✕" ToolTip.Tip="Retirer l'échéance" Margin="0,0,12,0"/>
+              <TextBlock Text="{Binding DueLabel}" Foreground="{Binding DueBrush}" VerticalAlignment="Center" Margin="0,0,12,0"/>
+              <TextBlock Text="{Binding AgeLabel}" Classes="muted" VerticalAlignment="Center" Margin="0,0,12,0"/>
+              <TextBlock Text="⏰ Prochain rappel :" VerticalAlignment="Center" Margin="0,0,6,0"/>
+              <CalendarDatePicker SelectedDate="{Binding ReminderDate, Mode=TwoWay}" Width="150" Margin="0,0,6,0"
+                                  ToolTip.Tip="Quand l'appli te demandera où en est cette tâche. Vider = rythme par défaut (1 semaine après la dernière avancée)."/>
+              <TextBlock Text="{Binding NextReminderLabel}" Classes="muted" VerticalAlignment="Center"/>
+            </WrapPanel>
+
+            <TextBox Text="{Binding Description}" AcceptsReturn="True" TextWrapping="Wrap" Height="60"
+                     Watermark="Contexte, objectif, à quoi ressemble « fini »… (aide beaucoup l'agent)"/>
+
+            <Expander HorizontalAlignment="Stretch">
+              <Expander.Header>
+                <TextBlock Text="{Binding ToolHeader}"/>
+              </Expander.Header>
+              <Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto,Auto" Margin="0,2">
+                <TextBlock Grid.Row="0" Text="Outil :" VerticalAlignment="Center" Margin="0,0,8,6"/>
+                <AutoCompleteBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" x:Name="ToolNameBox"
+                                 Text="{Binding ToolName, Mode=TwoWay}" FilterMode="Contains" MinimumPrefixLength="0"
+                                 Watermark="Projet Claude, Notion, Trello, Dossier…" Margin="0,0,0,6"/>
+                <TextBlock Grid.Row="1" Text="Projet :" VerticalAlignment="Center" Margin="0,0,8,6"/>
+                <TextBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding ToolProject}"
+                         Watermark="Nom du projet dédié (ex. Psy)" Margin="0,0,0,6"/>
+                <TextBlock Grid.Row="2" Text="Lien :" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding ToolLink}"
+                         Watermark="https://claude.ai/project/…  ou  D:\Dossiers\Psy"/>
+                <StackPanel Grid.Row="2" Grid.Column="2" Orientation="Horizontal" Margin="6,0,0,0" Spacing="4">
+                  <Button x:Name="FindToolBtn" Content="✨ Trouver"
+                          ToolTip.Tip="L'IA retrouve le dépôt GitHub ou le dossier local de cette tâche"/>
+                  <Button x:Name="BrowseToolBtn" Content="📁 Parcourir…"
+                          ToolTip.Tip="Choisir un dossier sur le disque"/>
+                  <Button x:Name="OpenToolBtn" Content="↗ Ouvrir" IsEnabled="{Binding HasToolLink}"
+                          ToolTip.Tip="Ouvre le projet dédié (navigateur ou explorateur)"/>
+                  <Button x:Name="ClearToolBtn" Content="✕" ToolTip.Tip="Retirer l'outil de gestion"/>
+                </StackPanel>
+              </Grid>
+            </Expander>
+
+            <Expander IsExpanded="True" HorizontalAlignment="Stretch">
+              <Expander.Header>
+                <TextBlock Text="{Binding SubProgressLabel, StringFormat='Sous-tâches · {0}'}"/>
+              </Expander.Header>
+              <StackPanel Spacing="6">
+                <ProgressBar Value="{Binding SubProgressPercent}" IsVisible="{Binding HasSubTasks}" Height="6" MinHeight="6"/>
+                <ScrollViewer MaxHeight="170">
+                  <ItemsControl x:Name="SubTaskList" ItemsSource="{Binding SubTasks}">
+                    <ItemsControl.ItemTemplate>
+                      <DataTemplate>
+                        <DockPanel Margin="0,1">
+                          <Button DockPanel.Dock="Right" Classes="remove" Content="✕" ToolTip.Tip="Supprimer la sous-tâche"/>
+                          <Button DockPanel.Dock="Right" Classes="move down" Content="▼" ToolTip.Tip="Descendre (Alt+↓)"/>
+                          <Button DockPanel.Dock="Right" Classes="move up" Content="▲" ToolTip.Tip="Monter (Alt+↑)"/>
+                          <TextBlock DockPanel.Dock="Right" Text="{Binding DoneLabel}" Classes="muted" VerticalAlignment="Center" Margin="8,0"/>
+                          <CheckBox DockPanel.Dock="Left" IsChecked="{Binding IsDone}" MinWidth="0" Margin="0,0,2,0"
+                                    ToolTip.Tip="Cocher = sous-tâche faite"/>
+                          <TextBox Classes="inline" Classes.done="{Binding IsDone}" TextWrapping="Wrap"
+                                   Text="{Binding Title, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"
+                                   ToolTip.Tip="Clique pour modifier · Entrée pour valider · Alt+↑/↓ pour déplacer"/>
+                        </DockPanel>
+                      </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                  </ItemsControl>
+                </ScrollViewer>
+                <DockPanel>
+                  <Button DockPanel.Dock="Right" x:Name="ImportStepsBtn" Content="➕ Étapes proposées par l'agent" Margin="6,0,0,0"
+                          ToolTip.Tip="Ajoute les lignes « - [ ] … » de la dernière réponse de l'agent"/>
+                  <TextBox x:Name="NewSubTaskBox" Watermark="Nouvelle sous-tâche… (Entrée)"/>
+                </DockPanel>
+              </StackPanel>
+            </Expander>
+
+            <Expander Header="Historique (ce qui a avancé ou non)" HorizontalAlignment="Stretch">
+              <ScrollViewer MaxHeight="150">
+                <ItemsControl ItemsSource="{Binding Log}">
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                      <TextBlock Text="{Binding Display}" Classes="muted" TextWrapping="Wrap" Margin="0,1"/>
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
+              </ScrollViewer>
+            </Expander>
+          </StackPanel>
+
+          <!-- Chat -->
+          <ScrollViewer Grid.Row="1" x:Name="ChatScroll" Margin="0,8,0,0">
+            <ItemsControl ItemsSource="{Binding Chat}">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                  <Border Classes="msg" Classes.user="{Binding IsUser}">
+                    <StackPanel Spacing="4">
+                      <TextBlock Text="{Binding Header}" Classes="muted"/>
+                      <SelectableTextBlock Text="{Binding Content}" TextWrapping="Wrap"/>
+                    </StackPanel>
+                  </Border>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </ScrollViewer>
+
+          <DockPanel Grid.Row="2" Margin="0,8,0,0">
+            <TextBlock DockPanel.Dock="Top" x:Name="StatusText" FontSize="12" Margin="0,0,0,4" TextWrapping="Wrap"/>
+            <StackPanel DockPanel.Dock="Right" Spacing="6" Margin="6,0,0,0" Width="130">
+              <Button x:Name="SendBtn" Content="Envoyer" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Classes="accent"/>
+              <Button x:Name="UnblockBtn" Content="🔓 Débloquer" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"/>
+              <Button x:Name="ResearchBtn" Content="🔎 Rechercher" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                      ToolTip.Tip="L'agent cherche sur le web les démarches, liens, coûts et étapes de cette tâche"/>
+              <Button x:Name="CancelBtn" Content="Annuler" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" IsVisible="False"/>
+            </StackPanel>
+            <TextBox x:Name="ChatInput" AcceptsReturn="True" TextWrapping="Wrap" Height="104"
+                     Watermark="Parle de cette tâche… (Ctrl+Entrée pour envoyer)"/>
+          </DockPanel>
+        </Grid>
+      </Panel>
+    </Border>
+  </Grid>
+</Window>

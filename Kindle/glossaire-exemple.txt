@@ -1,0 +1,10 @@
+# Glossaire pour --glossary
+# Une ligne seule  = terme gardé en anglais
+# a => b           = traduction imposée
+
+smart contract
+gas fee
+borrow checker
+framework
+ledger => registre
+wallet => portefeuille

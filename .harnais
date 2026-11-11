@@ -1,0 +1,16 @@
+{
+ "version": "44cb01c737f5",
+ "profil": "boucle",
+ "hooks": "ps1",
+ "pose_le": "2026-11-07",
+ "fichiers": {
+  ".claude/skills/capitaliser/SKILL.md": "8bcfe57f565f3b83",
+  "eval/consigne-extraction.md": "576b2036c23d31e2",
+  "eval/extraire_candidats.py": "0863bf2b714e24e2",
+  "eval/jsonschema_lite.py": "754d7cfb30a8a43b",
+  "eval/lire_transcripts.py": "106e93521cfbc000",
+  "eval/mesurer_sessions.py": "9d7af5125cad877e",
+  "eval/passation.py": "39bfa116efa42b68",
+  "eval/schemas/candidat.schema.json": "96d3ee5150005aca"
+ }
+}

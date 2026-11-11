@@ -1,0 +1,5 @@
+{
+  "_note": "Tolérance relative par signal : au-delà, la semaine est dégradée et mesurer_sessions.py sort en code 1. Une décision du projet, pas du harnais.",
+  "tolerance": 0.10,
+  "par_signal": {}
+}

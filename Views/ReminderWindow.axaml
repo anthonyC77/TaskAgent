@@ -1,0 +1,23 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="TaskAgent.Views.ReminderWindow"
+        Title="Où en est cette tâche ?"
+        Width="480" SizeToContent="Height" CanResize="False"
+        WindowStartupLocation="CenterOwner">
+  <StackPanel Margin="20" Spacing="12">
+    <TextBlock x:Name="HeaderText" FontSize="16" FontWeight="SemiBold" TextWrapping="Wrap"/>
+    <TextBlock Text="Qu'est-ce qui coince ?" Opacity="0.7"/>
+    <StackPanel x:Name="Reasons" Spacing="2"/>
+    <TextBox x:Name="DetailsBox" Watermark="Précise si tu veux (optionnel, mais ça aide l'agent)"
+             AcceptsReturn="True" TextWrapping="Wrap" Height="70"/>
+    <StackPanel Orientation="Horizontal" Spacing="8">
+      <TextBlock Text="Prochain rappel :" VerticalAlignment="Center" Opacity="0.7"/>
+      <ComboBox x:Name="NextReminderBox" MinWidth="170"/>
+    </StackPanel>
+    <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+      <Button x:Name="LaterBtn" Content="Plus tard"/>
+      <Button x:Name="SaveBtn" Content="Noter"/>
+      <Button x:Name="UnblockBtn" Content="🔓 Débloquer avec l'IA" Classes="accent"/>
+    </StackPanel>
+  </StackPanel>
+</Window>

@@ -1,0 +1,54 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dotnet build:*)",
+      "PowerShell(dotnet build:*)",
+      "Bash(git diff:*)",
+      "Bash(git status:*)",
+      "Bash(git log:*)"
+    ],
+    "deny": [
+      "Edit(eval/cas/**)",
+      "Write(eval/cas/**)",
+      "Edit(eval/reference.json)",
+      "Write(eval/reference.json)"
+    ],
+    "ask": [
+      "Bash(*deploy.ps1*)",
+      "PowerShell(*deploy.ps1*)"
+    ]
+  },
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell -NoProfile -ExecutionPolicy Bypass -File \"$CLAUDE_PROJECT_DIR/.claude/hooks/passation-stop.ps1\""
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell -NoProfile -ExecutionPolicy Bypass -File \"$CLAUDE_PROJECT_DIR/.claude/hooks/passation-fin.ps1\""
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "matcher": "startup|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell -NoProfile -ExecutionPolicy Bypass -File \"$CLAUDE_PROJECT_DIR/.claude/hooks/passation-debut.ps1\""
+          }
+        ]
+      }
+    ]
+  }
+}

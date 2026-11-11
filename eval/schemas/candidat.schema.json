@@ -1,0 +1,33 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "horus/candidat/1.0",
+ "title": "Candidat à la promotion",
+ "description": "Une ligne de .claude/apprentissage/candidats.jsonl : ce qu'un run a appris et qui pourrait mériter de ne plus être redécouvert. Proposé par un modèle hors système, promu par un humain. Un champ absent d'ici casse la validation : c'est voulu.",
+ "type": "object",
+ "additionalProperties": false,
+ "required": ["id", "session", "date", "type", "enonce", "preuve", "recurrence", "niveau_propose", "applicable", "verifiable_par", "confiance", "statut"],
+ "properties": {
+  "id": {"type": "string", "pattern": "^c-[0-9]{4}-W[0-9]{2}-[0-9]{3,}$", "description": "c-<semaine ISO>-<numéro>, unique dans le fichier"},
+  "session": {"type": "string", "minLength": 1, "description": "La session d'où vient la preuve"},
+  "date": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$", "description": "Date d'extraction : quand a-t-on su que c'était vrai"},
+  "type": {"type": "string", "enum": ["fait", "regle", "procedure", "invariant", "episode"],
+           "description": "fait : quelque chose de vrai sur le projet ; regle : ce qu'il faut faire ou ne pas faire ; procedure : des étapes reproductibles ; invariant : ce qui doit rester vrai et se vérifie ; episode : vrai une fois, ne mérite pas d'être promu"},
+  "enonce": {"type": "string", "minLength": 10, "maxLength": 400, "description": "Une phrase, au présent, vérifiable"},
+  "preuve": {"type": "string", "minLength": 1, "maxLength": 600, "description": "Ce qui, dans la session, montre que c'est vrai : une commande, une erreur, une correction humaine"},
+  "recurrence": {"type": "integer", "minimum": 1, "description": "Nombre de sessions où le même énoncé est apparu. Tenu par le script, pas par le modèle"},
+  "niveau_propose": {"type": "string", "enum": ["note", "doc", "skill", "test", "hook", "code"],
+                     "description": "Où ça devrait vivre : note (passation, temporaire), doc (fait durable), skill (procédure), test (vérifiable), hook (obligatoire), code (transformation stable)"},
+  "applicable": {"type": "string", "enum": ["action", "choix", "verification", "permission"],
+                 "description": "Ce que l'information change pour un agent : une action à faire, un choix à trancher, une vérification à lancer, une permission à demander"},
+  "verifiable_par": {"type": "string", "maxLength": 300, "description": "La commande ou l'observation qui dira si c'est encore vrai. Vide si rien ne le vérifie — c'est un signal en soi"},
+  "confiance": {"type": "number", "minimum": 0, "maximum": 1},
+  "statut": {"type": "string", "enum": ["propose", "promu", "rejete", "episode", "deprecie"]},
+  "sessions_vues": {"type": "array", "items": {"type": "string"}, "description": "Les sessions où l'énoncé est revenu (dédoublonnage)"},
+  "derniere_vue": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"},
+  "promu_vers": {"type": "string", "description": "Chemin de la cible quand statut = promu"},
+  "valide_jusqua": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$", "description": "Date à laquelle il faut revérifier ; passée, le candidat est déprécié"},
+  "promu_le": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"},
+  "motif": {"type": "string", "description": "Pourquoi rejeté, épisode ou déprécié"},
+  "deprecie_le": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"}
+ }
+}

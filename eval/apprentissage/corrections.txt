@@ -1,0 +1,8 @@
+# Un terme par ligne. Un message humain court qui commence par l'un d'eux compte comme correction.
+non
+pas ça
+pas ca
+je t'ai dit
+encore
+toujours pas
+faux
